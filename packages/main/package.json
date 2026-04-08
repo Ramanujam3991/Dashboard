@@ -1,0 +1,14 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc && electron ."
+  },
+  "devDependencies": {
+    "electron": "^29.1.5",
+    "typescript": "^5.4.5"
+  }
+}
