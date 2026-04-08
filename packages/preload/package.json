@@ -1,0 +1,13 @@
+{
+  "name": "preload",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "electron": "^29.4.6",
+    "typescript": "^5.9.3"
+  }
+}
