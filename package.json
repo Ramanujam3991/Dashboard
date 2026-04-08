@@ -1,0 +1,8 @@
+{
+  "name": "securities-analytics-desktop",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {}
+}
