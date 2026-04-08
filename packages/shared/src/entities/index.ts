@@ -56,3 +56,16 @@ export interface ShortInterestPrediction {
   trend: 'up' | 'down' | 'flat';
   drivers: string[];
 }
+
+export interface PriceTick {
+  ticker: string;
+  price: number;
+  changePct: number;
+  volume: number;
+  timestamp: string;
+}
+
+export interface RatePoint {
+  timestamp: string;
+  rate: number;
+}

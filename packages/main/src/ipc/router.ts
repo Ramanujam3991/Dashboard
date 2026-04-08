@@ -1,5 +1,6 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
-import { IpcChannelType } from 'shared';
+import { IpcChannelType, IpcStreamType } from 'shared';
+import { SubscriptionManager } from '../streaming/SubscriptionManager';
 
 // A handler maps a typed request to a typed response.
 // We use `unknown` at the boundary and cast inside register() where the caller
@@ -7,6 +8,7 @@ import { IpcChannelType } from 'shared';
 type BoundaryHandler = (req: unknown) => Promise<unknown>;
 
 const registry = new Map<IpcChannelType, BoundaryHandler>();
+const subscriptionManager = new SubscriptionManager();
 
 export const ipcRouter = {
   register: <TReq, TRes>(channel: IpcChannelType, handler: (req: TReq) => Promise<TRes>) => {
@@ -31,5 +33,20 @@ export const ipcRouter = {
         }
       },
     );
+
+    // Subscription (streaming) messages use send/on, not invoke/handle,
+    // because they are fire-and-forget from the renderer.
+    ipcMain.on(
+      'stream:subscribe',
+      (event, channel: IpcStreamType, params: unknown, subscriptionId: string) => {
+        console.log(`[IPC] subscribe channel=${channel} id=${subscriptionId}`);
+        subscriptionManager.subscribe(channel, params, event.sender, subscriptionId);
+      },
+    );
+
+    ipcMain.on('stream:unsubscribe', (_event, subscriptionId: string) => {
+      console.log(`[IPC] unsubscribe id=${subscriptionId}`);
+      subscriptionManager.unsubscribe(subscriptionId);
+    });
   },
 };
