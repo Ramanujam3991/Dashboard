@@ -1,2 +1,2 @@
 // Export IPC types here
-export {};
+export * from './channels';
