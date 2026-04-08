@@ -12,9 +12,14 @@ const createWindow = () => {
     },
   });
 
-  // We will load the Vite dev server URL or file in later tasks,
-  // for now we just load a blank page.
-  win.loadURL('about:blank');
+  // In development, load the Vite dev server URL
+  // In production, we would load the compiled index.html
+  const isDev = !app.isPackaged;
+  if (isDev) {
+    win.loadURL('http://localhost:5173');
+  } else {
+    win.loadFile(path.join(__dirname, '../../renderer/dist/index.html'));
+  }
 
   // Open DevTools to easily verify window.api is exposed
   win.webContents.openDevTools();
