@@ -19,8 +19,16 @@ const App = () => {
           card.
         </p>
         <div className="flex space-x-md">
-          <button className="px-lg py-sm bg-accent text-text-primary rounded-md hover:bg-surface-hover transition-colors">
-            Primary Accent
+          <button
+            onClick={async () => {
+              const res = await window.api.invoke('security:getOverview', {
+                ticker: 'AAPL',
+              });
+              console.log('IPC Res:', res);
+            }}
+            className="px-lg py-sm bg-accent text-text-primary rounded-md hover:bg-surface-hover transition-colors"
+          >
+            Test IPC
           </button>
           <div className="px-lg py-sm bg-semantic-up text-background rounded-md font-bold">
             Up Signal

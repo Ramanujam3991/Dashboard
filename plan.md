@@ -5,11 +5,13 @@ Technical blueprint for the Securities Analytics Desktop App. This document tran
 ## Technology Stack
 
 ### Runtime and language
+
 - **Electron** (latest stable) — desktop shell
 - **Node.js** (LTS, bundled with Electron) — main process backend
 - **TypeScript** (strict mode) — main, renderer, and shared types
 
 ### Renderer (UI)
+
 - **React** (latest stable) with function components and hooks
 - **Vite** — dev server and renderer bundler
 - **Tailwind CSS** — utility styling, driven by centralized theme tokens
@@ -20,6 +22,7 @@ Technical blueprint for the Securities Analytics Desktop App. This document tran
 - **lucide-react** — icons
 
 ### Main process (backend)
+
 - **gRPC client** (`@grpc/grpc-js` + `@grpc/proto-loader`) — streaming PKNXT calls
 - **undici** — HTTP client for PKNXT REST polling
 - **openid-client** — OAuth 2.0 / OIDC flow against corporate SSO
@@ -28,6 +31,7 @@ Technical blueprint for the Securities Analytics Desktop App. This document tran
 - **zod** — runtime validation of PKNXT responses at the boundary
 
 ### Build, test, packaging
+
 - **electron-builder** — signed installers for Windows (`.exe` / `.msi`) and macOS (`.dmg`)
 - **electron-updater** — auto-update channel
 - **Vitest** — unit tests for main and renderer
@@ -138,13 +142,14 @@ securities-analytics-desktop/
     └── e2e/                       # Playwright Electron tests
 ```
 
-A monorepo with `packages/shared`, `packages/main`, `packages/preload`, `packages/renderer`. The "single server" rule means there is exactly one `main` package; new features become services *inside* it, never new packages with their own process.
+A monorepo with `packages/shared`, `packages/main`, `packages/preload`, `packages/renderer`. The "single server" rule means there is exactly one `main` package; new features become services _inside_ it, never new packages with their own process.
 
 ## IPC Contract Design
 
 All IPC channels are defined once in `packages/shared/src/ipc` and imported by both main and renderer. Two channel patterns:
 
 **Request/response** (for polled data and commands)
+
 ```ts
 // shared/src/ipc/channels.ts
 export const IpcChannel = {
@@ -170,6 +175,7 @@ export interface SecurityGetOverviewResponse {
 ```
 
 **Subscription** (for streaming data)
+
 ```ts
 export const IpcStream = {
   PriceTicks: 'stream:priceTicks',
@@ -189,6 +195,7 @@ The preload script exposes a single `window.api` object with `invoke`, `subscrib
 Per the spec, prices and charts stream; everything else polls.
 
 **Streaming path**
+
 - Renderer panel mounts → calls `window.api.subscribe(IpcStream.PriceTicks, { ticker })`
 - Main process opens (or reuses) a gRPC server-streaming call to PKNXT
 - A `SubscriptionManager` in main multiplexes: one upstream gRPC stream per (channel, params) key, fanned out to multiple renderer subscribers if needed
@@ -197,6 +204,7 @@ Per the spec, prices and charts stream; everything else polls.
 - Reconnect with exponential backoff on disconnect; renderer sees a `stale` state until reconnect succeeds
 
 **Polling path**
+
 - Renderer panel uses a TanStack Query hook with the cadence from the spec table
 - The query function calls `window.api.invoke(IpcChannel.SecurityGetOverview, { ticker, clientId })`
 - Main process service layer calls PKNXT REST via undici, validates with zod, returns typed response

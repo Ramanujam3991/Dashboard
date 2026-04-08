@@ -1,5 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
+import { ipcRouter } from './ipc/router';
+import { IpcChannel, SecurityGetOverviewRequest } from 'shared';
 
 const createWindow = () => {
   const win = new BrowserWindow({
@@ -26,6 +28,19 @@ const createWindow = () => {
 };
 
 app.whenReady().then(() => {
+  // Initialize IPC Router
+  ipcRouter.init();
+
+  // Register a stub handler for testing T1.2
+  ipcRouter.register(IpcChannel.SecurityGetOverview, async (req: SecurityGetOverviewRequest) => {
+    console.log('[Main] Received SecurityGetOverviewRequest:', req);
+    return {
+      security: { ticker: req.ticker, name: 'Apple Inc.', price: 150 },
+      ourBook: { shortQty: 100 },
+      asOf: new Date().toISOString(),
+    };
+  });
+
   createWindow();
 
   app.on('activate', () => {

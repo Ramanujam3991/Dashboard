@@ -5,6 +5,7 @@ Project-wide rules and invariants for the Securities Analytics Desktop App. Thes
 ## Architecture Invariants
 
 ### Single-server architecture
+
 - The Electron **main process is the one and only Node.js backend** for this application.
 - There is exactly **one** Node.js process serving as the backend. No sidecar servers, no spawned worker servers, no per-feature module servers, no local microservices.
 - Do **not** decompose the backend into multiple independently running services or processes the way the Swift parser project was structured. That pattern is explicitly rejected for this project.
@@ -12,12 +13,14 @@ Project-wide rules and invariants for the Securities Analytics Desktop App. Thes
 - All PKNXT communication, all auth, all caching, and all IPC handling lives inside this single main process.
 
 ### Process boundaries
+
 - Two processes exist at runtime: the **Electron main process** (Node.js backend) and the **Electron renderer process** (React UI). Nothing else.
 - The renderer **never** makes network calls. All outbound network traffic originates from the main process.
 - The renderer **never** has Node integration enabled. `nodeIntegration: false` and `contextIsolation: true` are mandatory on every `BrowserWindow`.
 - The renderer communicates with the main process **exclusively** through typed IPC channels exposed via a `contextBridge` preload script. No `remote` module, no direct `ipcRenderer` access from React components.
 
 ### Data access
+
 - PKNXT is the **only** upstream data source. No direct calls to Summit, Hazelcast, SQL Server, or Databricks from this application.
 - All PKNXT access goes through a single client module in the main process. No ad-hoc `fetch` or gRPC calls scattered across feature code.
 - Streaming subscriptions (prices, charts) and polling requests share the same client and the same auth context.

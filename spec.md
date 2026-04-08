@@ -40,6 +40,7 @@ The application is delivered as an Electron desktop app with a Node.js backend (
 ### Screen 1 — Security Search / Overview (primary screen)
 
 **Header bar**
+
 - Ticker search input with autocomplete
 - Client selector dropdown
 - Quick-access ticker chips (recent or watched)
@@ -48,6 +49,7 @@ The application is delivered as an Electron desktop app with a Node.js backend (
 - User avatar / account menu
 
 **Security header panel**
+
 - Ticker, company name, exchange, sector
 - Current price and daily change (streaming)
 - Status badges (HTB, borrow rate band, size indicators)
@@ -55,6 +57,7 @@ The application is delivered as an Electron desktop app with a Node.js backend (
 - One-line summary, e.g., "utilization critically tight at X%, rate outperforming street by Y bps"
 
 **Our Book panel**
+
 - Short quantity (our book)
 - Offer rate
 - Available quantity
@@ -67,6 +70,7 @@ The application is delivered as an Electron desktop app with a Node.js backend (
 - Position summary (shares, notional, daily revenue)
 
 **Street Picture panel**
+
 - Quantity on loan (street)
 - Street borrow rate
 - Number of borrowers
@@ -74,15 +78,18 @@ The application is delivered as an Electron desktop app with a Node.js backend (
 - Trend deltas vs. prior period
 
 **Rate vs. Vendors panel**
+
 - Our rate compared to IHS, S3, Aztec, and other vendor rates
 - Delta per vendor
 - Visual bar comparison
 
 **Clients in Name panel**
+
 - List of clients holding the position
 - Per-client utilization and daily revenue
 
 **Short Interest — Predicted panel**
+
 - Last Bloomberg print value and date
 - Predicted SI Now with confidence band
 - Book coverage %
@@ -90,21 +97,27 @@ The application is delivered as an Electron desktop app with a Node.js backend (
 - Bloomberg print vs. our prediction chart with forecast shading (streaming)
 
 **Rate history chart** (streaming)
+
 - Our rate vs. street average over time
 
 **Quantity on Loan & Short Interest chart** (streaming)
+
 - Qty on loan (street) and SI (predicted) over time, dual-axis
 
 **Corporate Actions panel**
+
 - Upcoming events (earnings, splits, dividends)
 
 **Data Changes panel**
+
 - Week-over-week comparison table (short qty, avail, utilization, rate)
 
 **Vendor Data panel**
+
 - Week-over-week vendor snapshot (street rate, borrowers)
 
 **Bloomberg Chat panel**
+
 - Tier-filtered suggested chat message with current metrics interpolated
 - Copy button (generates copyable text only — does not post to Bloomberg)
 
@@ -118,21 +131,21 @@ The application is delivered as an Electron desktop app with a Node.js backend (
 
 Per product direction, panels containing **prices or charts stream live**; all other panels poll on a fixed cadence.
 
-| Panel | Mode | Cadence |
-|---|---|---|
-| Security header (price, change) | Stream | Live |
-| Rate history chart | Stream | Live |
-| Qty on Loan & SI chart | Stream | Live |
-| Bloomberg print vs. prediction chart | Stream | Live |
-| Our Book | Poll | 30s |
-| Street Picture | Poll | 30s |
-| Rate vs. Vendors | Poll | 60s |
-| Clients in Name | Poll | 60s |
-| Short Interest — Predicted (numeric) | Poll | 60s |
-| Corporate Actions | Poll | 5 min |
-| Data Changes | Poll | 5 min |
-| Vendor Data | Poll | 5 min |
-| Bloomberg Chat suggestion | Poll | 60s |
+| Panel                                | Mode   | Cadence |
+| ------------------------------------ | ------ | ------- |
+| Security header (price, change)      | Stream | Live    |
+| Rate history chart                   | Stream | Live    |
+| Qty on Loan & SI chart               | Stream | Live    |
+| Bloomberg print vs. prediction chart | Stream | Live    |
+| Our Book                             | Poll   | 30s     |
+| Street Picture                       | Poll   | 30s     |
+| Rate vs. Vendors                     | Poll   | 60s     |
+| Clients in Name                      | Poll   | 60s     |
+| Short Interest — Predicted (numeric) | Poll   | 60s     |
+| Corporate Actions                    | Poll   | 5 min   |
+| Data Changes                         | Poll   | 5 min   |
+| Vendor Data                          | Poll   | 5 min   |
+| Bloomberg Chat suggestion            | Poll   | 60s     |
 
 Streaming uses gRPC server-streaming where PKNXT supports it; polling uses REST. All transport is brokered by the Electron main process.
 
@@ -140,16 +153,17 @@ Streaming uses gRPC server-streaming where PKNXT supports it; polling uses REST.
 
 The app consumes data exclusively from the PKNXT Data Service, which aggregates upstream systems:
 
-| Source | Role | Reached via |
-|---|---|---|
-| Summit | Positions / book data | PKNXT |
-| Hazelcast Cache | Low-latency hot data | PKNXT |
-| SQL Server | Reference and historical | PKNXT |
-| Databricks | Analytics, predictions, ML models | PKNXT |
+| Source          | Role                              | Reached via |
+| --------------- | --------------------------------- | ----------- |
+| Summit          | Positions / book data             | PKNXT       |
+| Hazelcast Cache | Low-latency hot data              | PKNXT       |
+| SQL Server      | Reference and historical          | PKNXT       |
+| Databricks      | Analytics, predictions, ML models | PKNXT       |
 
 PKNXT exposes both gRPC and REST. The Electron Node.js main process is the only component that calls PKNXT; the React renderer accesses data exclusively via typed IPC channels.
 
 **Key data entities**
+
 - Security (ticker, identifiers, reference data)
 - Book position (our side)
 - Street metrics (loan qty, borrowers, utilization, rates)

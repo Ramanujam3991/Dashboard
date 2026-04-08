@@ -7,6 +7,9 @@
     "build": "tsc",
     "dev": "tsc && electron ."
   },
+  "dependencies": {
+    "shared": "workspace:*"
+  },
   "devDependencies": {
     "electron": "^29.1.5",
     "typescript": "^5.4.5"
